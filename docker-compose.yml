@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # Database - always available for both profiles
   db:
     image: postgres:15-alpine
     volumes:
@@ -17,6 +18,7 @@ services:
       timeout: 5s
       retries: 5
 
+  # Redis - always available for both profiles
   redis:
     image: redis:7-alpine
     ports:
@@ -27,7 +29,9 @@ services:
       timeout: 5s
       retries: 5
 
+  # Backend - only for 'full' profile (Django in Docker)
   backend:
+    profiles: ["full"]
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -56,7 +60,9 @@ services:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
 
+  # Celery Worker - only for 'full' profile
   celery:
+    profiles: ["full"]
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -78,7 +84,9 @@ services:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
 
+  # Celery Beat - only for 'full' profile
   celery-beat:
+    profiles: ["full"]
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -100,6 +108,7 @@ services:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
 
+  # Frontend - available for both profiles
   frontend:
     build:
       context: ./frontend
@@ -109,8 +118,6 @@ services:
     volumes:
       - caddy_data:/data
       - caddy_config:/config
-    depends_on:
-      - backend
     environment:
       - REACT_APP_API_URL=http://localhost:8000/api
 
