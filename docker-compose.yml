@@ -109,17 +109,17 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
 
   # Frontend - available for both profiles
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3000:80"
-    volumes:
-      - caddy_data:/data
-      - caddy_config:/config
-    environment:
-      - REACT_APP_API_URL=http://localhost:8000/api
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3000:80"
+  #   volumes:
+  #     - caddy_data:/data
+  #     - caddy_config:/config
+  #   environment:
+  #     - REACT_APP_API_URL=http://localhost:8000/api
 
 volumes:
   postgres_data:
